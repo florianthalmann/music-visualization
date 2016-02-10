@@ -1,7 +1,7 @@
 (function () {
 	'use strict';
 	
-	angular.module('dymoDesigner.directives')
+	angular.module('musicVisualization.directives')
 		.directive('dymoChords', ['d3', function(d3) {
 			return {
 				restrict: 'EA',
