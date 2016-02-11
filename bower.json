@@ -1,8 +1,8 @@
 {
   "name": "music-visualization",
+  "version": "0.0.2",
   "homepage": "https://github.com/florianthalmann/music-visualization",
   "description": "some angular directives for music visualization with d3",
-  "version": "0.0.2",
   "main": "",
   "moduleType": [],
   "authors": [

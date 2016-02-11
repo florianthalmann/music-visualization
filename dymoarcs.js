@@ -9,6 +9,7 @@
 					data: "=",
 					viewconfig: "=",
 					playing: "=",
+					height: "=",
 					label: "@",
 					onClick: "&"
 				},
@@ -17,14 +18,14 @@
 						.append("svg")
 						.attr("width", "100%");
 					
-					var height = 500;
+					var height = scope.height? scope.height: 500;
 					var padding = 50;
 					var previousColors = null;
 					var prevRandomValues = {};
 					
 					var xScale, yScale, sizeScale, heightScale, colorScale;
 					
-					// Axes. Note the inverted domain for the y-scale: bigger is up!
+					/*// Axes. Note the inverted domain for the y-scale: bigger is up!
 					var xAxis = d3.svg.axis().orient("bottom"),
 					yAxis = d3.svg.axis().orient("left");
 					
@@ -36,7 +37,7 @@
 					svg.append("g")
 						.attr("class", "yaxis")
 						.attr("transform", "translate(" + padding + ",0)")
-						.call(yAxis);
+						.call(yAxis);*/
 					
 					// on window resize, re-render d3 canvas
 					window.onresize = function() {
@@ -86,82 +87,85 @@
 							return d3.scale.linear().domain([param.min, param.max]);
 						}
 						
-						xAxis.scale(xScale).tickFormat(d3.format(".g"));
+						/*xAxis.scale(xScale).tickFormat(d3.format(".g"));
 						yAxis.scale(yScale).tickFormat(d3.format(".g"));
 						
 						//update axes
 						svg.selectAll("g.xaxis")
 							.call(xAxis);
 						svg.selectAll("g.yaxis")
-							.call(yAxis);
+							.call(yAxis);*/
 						
-						var circles = svg.selectAll("circle").data(data["nodes"]);
+						if (data) {
+							var circles = svg.selectAll("circle").data(data["nodes"]);
 						
-						circles.enter()
-							.append("circle")
-							.on("click", function(d, i){return scope.onClick({item: d});})
-							.style("fill", getHsl)
-							.style("opacity", 0.2)
-							.attr("r", 0)
-							.attr("cx", getXValue)
-							.attr("cy", getYValue)
-							.transition()
-								.duration(500) // time of duration
-								.attr("r", getR); // width based on scale
-						
-						circles
-							.transition()
-								.duration(500) // time of duration
+							circles.enter()
+								.append("circle")
+								.on("click", function(d, i){return scope.onClick({item: d});})
 								.style("fill", getHsl)
 								.style("opacity", 0.2)
-								.attr("r", getR) // width based on scale
+								.attr("r", 0)
 								.attr("cx", getXValue)
-								.attr("cy", getYValue);
+								.attr("cy", getYValue)
+								.transition()
+									.duration(500) // time of duration
+									.attr("r", getR); // width based on scale
 						
-						circles.exit().remove();
+							circles
+								.transition()
+									.duration(500) // time of duration
+									.style("fill", getHsl)
+									.style("opacity", 0.2)
+									.attr("r", getR) // width based on scale
+									.attr("cx", getXValue)
+									.attr("cy", getYValue);
 						
-						// scale to generate radians (just for lower-half of circle)
-						var radians = d3.scale.linear().range([-Math.PI / 2, Math.PI / 2]);
-
-		    // path generator for arcs (uses polar coordinates)
-		    var arc = d3.svg.line.radial()
-		        .interpolate("basis")
-		        .tension(0)
-		        .angle(function(d) { return radians(d); });
-
-		    // add links
-						var links = svg.selectAll(".link").data(data["links"]);
-						links.enter()
-		        .append("path")
-		        .attr("class", "link")
-						.style("stroke", function(d, i) {return getHsl(d.source);})
-						//.style("fill", function(d, i) {return getHsl(d.source);})
-						.style("opacity", 0.2)
-		        .attr("transform", function(d, i) {
-		            // arc will always be drawn around (0, 0)
-		            // shift so (0, 0) will be between source and target
-		            var xshift = getXValue(d.source) + (getXValue(d.target) - getXValue(d.source)) / 2;
-		            var yshift = getYValue();
-		            return "translate(" + xshift + ", " + yshift + ")";
-		        })
-		        .attr("d", function(d, i) {
-		            // get x distance between source and target
-		            var xdist = Math.abs(getXValue(d.source) - getXValue(d.target));
-
-		            // set arc radius based on x distance
-		            arc.radius(xdist / 2);
-
-		            // want to generate 1/3 as many points per pixel in x direction
-		            var points = d3.range(0, Math.ceil(xdist / 3));
-
-		            // set radian scale domain
-		            radians.domain([0, points.length - 1]);
-
-		            // return path for arc
-		            return arc(points);
-		        });
+							circles.exit().remove();
 						
-					};
+							// scale to generate radians (just for lower-half of circle)
+							var radians = d3.scale.linear().range([-Math.PI / 2, Math.PI / 2]);
+
+			    // path generator for arcs (uses polar coordinates)
+			    var arc = d3.svg.line.radial()
+			        .interpolate("basis")
+			        .tension(0)
+			        .angle(function(d) { return radians(d); });
+
+			    // add links
+							var links = svg.selectAll(".link").data(data["links"]);
+							links.enter()
+			        .append("path")
+			        .attr("class", "link")
+							.style("stroke", function(d, i) {return getHsl(d.source);})
+							.attr("fill", "none")
+							//.style("fill", function(d, i) {return getHsl(d.source);})
+							.style("opacity", 0.2)
+			        .attr("transform", function(d, i) {
+			            // arc will always be drawn around (0, 0)
+			            // shift so (0, 0) will be between source and target
+			            var xshift = getXValue(d.source) + (getXValue(d.target) - getXValue(d.source)) / 2;
+			            var yshift = getYValue();
+			            return "translate(" + xshift + ", " + yshift + ")";
+			        })
+			        .attr("d", function(d, i) {
+			            // get x distance between source and target
+			            var xdist = Math.abs(getXValue(d.source) - getXValue(d.target));
+
+			            // set arc radius based on x distance
+			            arc.radius(xdist / 2);
+
+			            // want to generate 1/3 as many points per pixel in x direction
+			            var points = d3.range(0, Math.ceil(xdist / 3));
+
+			            // set radian scale domain
+			            radians.domain([0, points.length - 1]);
+
+			            // return path for arc
+			            return arc(points);
+			        });
+						
+						};
+					}
 					
 					
 					function getXValue(d, i) {
