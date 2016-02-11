@@ -9,6 +9,8 @@
 					data: "=",
 					viewconfig: "=",
 					playing: "=",
+					height: "=",
+					axes: "=",
 					label: "@",
 					onClick: "&"
 				},
@@ -17,26 +19,28 @@
 						.append("svg")
 						.attr("width", "100%");
 					
-					var height = 600;
+					var height = scope.height? scope.height: 600;
 					var padding = 50;
 					var previousColors = null;
 					var prevRandomValues = {};
 					
 					var xScale, yScale, heightScale, widthScale, colorScale;
 					
-					// Axes. Note the inverted domain for the y-scale: bigger is up!
-					var xAxis = d3.svg.axis().orient("bottom"),
-					yAxis = d3.svg.axis().orient("left");
+					if (scope.axes) {
+						// Axes. Note the inverted domain for the y-scale: bigger is up!
+						var xAxis = d3.svg.axis().orient("bottom"),
+						yAxis = d3.svg.axis().orient("left");
 					
-					svg.append("g")
-						.attr("class", "xaxis")  //Assign "axis" class
-						.attr("transform", "translate(0," + (height - padding) + ")")
-						.call(xAxis);
+						svg.append("g")
+							.attr("class", "xaxis")  //Assign "axis" class
+							.attr("transform", "translate(0," + (height - padding) + ")")
+							.call(xAxis);
 				
-					svg.append("g")
-						.attr("class", "yaxis")
-						.attr("transform", "translate(" + padding + ",0)")
-						.call(yAxis);
+						svg.append("g")
+							.attr("class", "yaxis")
+							.attr("transform", "translate(" + padding + ",0)")
+							.call(yAxis);
+					}
 					
 					// on window resize, re-render d3 canvas
 					window.onresize = function() {
@@ -103,41 +107,45 @@
 							return d3.scale.linear().domain([0, param.max]);
 						}
 						
-						xAxis.scale(xScale).tickFormat(d3.format(".g"));
-						yAxis.scale(yScale).tickFormat(d3.format(".g"));
+						if (scope.axes) {
+							xAxis.scale(xScale).tickFormat(d3.format(".g"));
+							yAxis.scale(yScale).tickFormat(d3.format(".g"));
 						
-						//update axes
-						svg.selectAll("g.xaxis")
-							.call(xAxis);
-						svg.selectAll("g.yaxis")
-							.call(yAxis);
-						
-						var rects = svg.selectAll("rect").data(data["nodes"]);
-						
-						rects.enter()
-							.append("rect")
-							.on("click", function(d, i){return scope.onClick({item: d});})
-							.style("fill", getHsl)
-							.style("opacity", 0.1)
-							.attr("x", getXValue)
-							.attr("y", getYValue)
-							.attr("width", getWidthValue)
-							.attr("height", getYValue)
-							.transition()
-								.duration(500) // time of duration
-								.attr("height", getHeightValue); // width based on scale
-						
-						rects
-							.transition()
-								.duration(500) // time of duration
+							//update axes
+							svg.selectAll("g.xaxis")
+								.call(xAxis);
+							svg.selectAll("g.yaxis")
+								.call(yAxis);
+						}
+							
+						if (data) {
+							var rects = svg.selectAll("rect").data(data["nodes"]);
+							
+							rects.enter()
+								.append("rect")
+								.on("click", function(d, i){return scope.onClick({item: d});})
 								.style("fill", getHsl)
 								.style("opacity", 0.1)
 								.attr("x", getXValue)
 								.attr("y", getYValue)
 								.attr("width", getWidthValue)
-								.attr("height", getHeightValue);
-						
-						rects.exit().remove();
+								.attr("height", getYValue)
+								.transition()
+									.duration(500) // time of duration
+									.attr("height", getHeightValue); // width based on scale
+							
+							rects
+								.transition()
+									.duration(500) // time of duration
+									.style("fill", getHsl)
+									.style("opacity", 0.1)
+									.attr("x", getXValue)
+									.attr("y", getYValue)
+									.attr("width", getWidthValue)
+									.attr("height", getHeightValue);
+							
+							rects.exit().remove();
+						}
 						
 					};
 					

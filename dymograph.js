@@ -9,6 +9,7 @@
 					data: "=",
 					viewconfig: "=",
 					playing: "=",
+					height: "=",
 					label: "@",
 					onClick: "&"
 				},
@@ -81,7 +82,7 @@
 					// define render function
 					scope.render = function(graph) {
 						var width = d3.select(iElement[0])[0][0].offsetWidth - 20; // 20 is for margins and can be changed
-						var height = 500;
+						var height = scope.height? scope.height: 500;
 						svg.attr('height', height);
 						
 						sizeScale = createScale(scope.viewconfig.size.log, scope.viewconfig.size.param).range([5, 30]),
@@ -94,39 +95,41 @@
 							return d3.scale.linear().domain([param.min, param.max]);
 						}
 						
-						force
-							.size([width, height])
-							.nodes(graph.nodes)
-							.links(graph.links);
-						
-						link = link.data(force.links(), function(d) { return d.source["@id"] + "-" + d.target["@id"]; });
-						link.enter().insert("line", ".node")
-							.attr("stroke", getHsl)
-							.style("opacity", 0.1)
-							.style("stroke-width", 1);
-						link
-							.transition()
-								.duration(500)
+						if (graph) {
+							force
+								.size([width, height])
+								.nodes(graph.nodes)
+								.links(graph.links);
+							
+							link = link.data(force.links(), function(d) { return d.source["@id"] + "-" + d.target["@id"]; });
+							link.enter().insert("line", ".node")
 								.attr("stroke", getHsl)
 								.style("opacity", 0.1)
-						link.exit().remove();
-						
-						node = node.data(force.nodes(), function(d) { return d["@id"];});
-						node.enter().append("circle")
-							.attr("r", getR)
-							.style("fill", getHsl)
-							.style("opacity", 0.4)
-							.call(force.drag)
-							.on("click", function(d, i){return scope.onClick({item: d});});
-						node
-							.transition()
-								.duration(500)
+								.style("stroke-width", 1);
+							link
+								.transition()
+									.duration(500)
+									.attr("stroke", getHsl)
+									.style("opacity", 0.1)
+							link.exit().remove();
+							
+							node = node.data(force.nodes(), function(d) { return d["@id"];});
+							node.enter().append("circle")
+								.attr("r", getR)
 								.style("fill", getHsl)
 								.style("opacity", 0.4)
-								.attr("r", getR);
-						node.exit().remove();
-						
-						force.start();
+								.call(force.drag)
+								.on("click", function(d, i){return scope.onClick({item: d});});
+							node
+								.transition()
+									.duration(500)
+									.style("fill", getHsl)
+									.style("opacity", 0.4)
+									.attr("r", getR);
+							node.exit().remove();
+							
+							force.start();
+						}
 						
 					};
 					
