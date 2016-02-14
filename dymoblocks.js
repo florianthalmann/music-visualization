@@ -20,7 +20,7 @@
 						.attr("width", "100%");
 					
 					var height = scope.height? scope.height: 600;
-					var padding = 50;
+					var padding = 0;
 					var previousColors = null;
 					var prevRandomValues = {};
 					
@@ -125,24 +125,24 @@
 								.append("rect")
 								.on("click", function(d, i){return scope.onClick({item: d});})
 								.style("fill", getHsl)
-								.style("opacity", 0.1)
-								.attr("x", getXValue)
-								.attr("y", getYValue)
-								.attr("width", getWidthValue)
-								.attr("height", getYValue)
+								.style("opacity", 0.4)
+								.attr("x", getX)
+								.attr("y", getY)
+								.attr("width", getWidth)
+								.attr("height", getHeight)
 								.transition()
 									.duration(500) // time of duration
-									.attr("height", getHeightValue); // width based on scale
+									.attr("height", getHeight); // width based on scale
 							
 							rects
 								.transition()
 									.duration(500) // time of duration
 									.style("fill", getHsl)
-									.style("opacity", 0.1)
-									.attr("x", getXValue)
-									.attr("y", getYValue)
-									.attr("width", getWidthValue)
-									.attr("height", getHeightValue);
+									.style("opacity", 0.4)
+									.attr("x", getX)
+									.attr("y", getY)
+									.attr("width", getWidth)
+									.attr("height", getHeight);
 							
 							rects.exit().remove();
 						}
@@ -150,24 +150,29 @@
 					};
 					
 					
-					function getXValue(d, i) {
-						var x = xScale(getVisualValue(d, scope.viewconfig.xAxis.param, "x"));
-						return x > 0 ? x : 0;
+					function getX(d, i) {
+						if (d["time"]) {
+							return xScale(d["time"].value);
+						}
+						return 0;
 					}
 					
-					function getYValue(d, i) {
-						var y = yScale(getVisualValue(d, scope.viewconfig.yAxis.param, "y"));
-						return y > 0 ? y : 0;
+					function getY(d, i) {
+						return yScale(d["Loudness"].value);
 					}
 					
-					function getHeightValue(d, i) {
-						var height = heightScale(getVisualValue(d, scope.viewconfig.yAxis.param, "y"));
-						return height > 0 ? height : 0;
+					function getHeight(d) {
+						if (d["@id"] > "dymo0") {
+							return heightScale(d["Loudness"].value);
+						}
+						return 0;
 					}
 					
-					function getWidthValue(d) {
-						var width = widthScale(getVisualValue(d, scope.viewconfig.size.param, "size"));
-						return width > 0 ? width : 0;
+					function getWidth(d) {
+						if (d["duration"]) {
+							return widthScale(d["duration"].value);
+						}
+						return 0;
 					}
 					
 					function getHsl(d) {

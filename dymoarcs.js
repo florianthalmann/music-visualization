@@ -19,7 +19,7 @@
 						.attr("width", "100%");
 					
 					var height = scope.height? scope.height: 500;
-					var padding = 50;
+					var padding = 35;
 					var previousColors = null;
 					var prevRandomValues = {};
 					
