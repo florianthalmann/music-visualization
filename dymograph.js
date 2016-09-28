@@ -165,15 +165,19 @@
 							if (prevRandomValues[dymo["@id"]] && prevRandomValues[dymo["@id"]][key]) {
 								delete prevRandomValues[dymo["@id"]][key];
 							}
-							if (dymo[parameter.name]) {
-								//not suitable for vectors!! (just takes the first element..)
-								var value = dymo[parameter.name].value;
-								if (value.length) {
-									value = value[0];
+							if (dymo["features"]) {
+								var feature = dymo["features"].filter(function(f){return f["@type"] == parameter.name;});
+								if (feature.length > 0) {
+									var value = feature[0]["value"]["@value"];
+									//not suitable for vectors!! (just takes the first element..)
+									if (Array.isArray(value)) {
+										value = value[0];
+									}
+									value = Number(value);
+									return value;
 								}
-								return value;
 							}
-							return 0.00000001; //for log scale :(
+							return 0;//0.00000001; //for log scale :(
 						}
 					}
 				}

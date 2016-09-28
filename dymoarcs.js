@@ -84,7 +84,11 @@
 								}
 								return d3.scale.log().base(2).domain([min, param.max]);
 							}
-							return d3.scale.linear().domain([param.min, param.max]);
+							if (param.min != param.max) {
+								return d3.scale.linear().domain([param.min, param.max]);
+							}
+							//in case all values are the same...
+							return d3.scale.linear().domain([param.min/2, param.max*2]);
 						}
 						
 						/*xAxis.scale(xScale).tickFormat(d3.format(".g"));
@@ -207,13 +211,32 @@
 							if (prevRandomValues[dymo["@id"]] && prevRandomValues[dymo["@id"]][key]) {
 								delete prevRandomValues[dymo["@id"]][key];
 							}
-							if (dymo[parameter.name]) {
-								//not suitable for vectors!! (just takes the first element..)
-								var value = dymo[parameter.name].value;
-								if (value.length) {
-									value = value[0];
+							if (dymo["features"]) {
+								var value;
+								if (Array.isArray(dymo["features"])) {
+									var feature = dymo["features"].filter(function(f){return f["@type"] == parameter.name;});
+									if (feature.length > 0) {
+										if (typeof feature[0]["value"] == "string") {
+											value = feature[0]["value"];
+										} else {
+											value = feature[0]["value"]["@value"];
+										}
+									}
+								} else if (dymo["features"]["@type"] == parameter.name) {
+									value = dymo["features"]["value"]["@value"];
 								}
-								return value;
+								//console.log(parameter.name, value)
+								if (!isNaN(value)) {
+									//not suitable for vectors!! (just takes the first element..)
+									if (Array.isArray(value)) {
+										value = value[0];
+									}
+									value = Number(value);
+									return value;
+								}
+								if (typeof value == "string") {
+									return value;
+								}
 							}
 							return 0;//0.00000001; //for log scale :(
 						}
