@@ -1,0 +1,45 @@
+{
+  "name": "music-visualization",
+  "version": "0.0.3",
+  "description": "Some templates for music visualization with d3",
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "files": [
+    "lib/",
+    "spec"
+  ],
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/florianthalmann/music-visualization.git"
+  },
+  "keywords": [
+    "music",
+    "visualization"
+  ],
+  "author": "florianthalmann",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/florianthalmann/music-visualization/issues"
+  },
+  "homepage": "https://github.com/florianthalmann/music-visualization#readme",
+  "dependencies": {
+    "d3-axis": "^1.0.6",
+    "d3-drag": "^1.0.4",
+    "d3-force": "^1.0.6",
+    "d3-scale": "^1.0.5",
+    "d3-selection": "^1.0.5",
+    "d3-shape": "^1.0.6"
+  },
+  "devDependencies": {
+    "@types/d3-axis": "^1.0.8",
+    "@types/d3-drag": "^1.0.7",
+    "@types/d3-force": "^1.0.7",
+    "@types/d3-scale": "^1.0.8",
+    "@types/d3-selection": "^1.0.15",
+    "@types/d3-shape": "^1.0.10",
+    "typescript": "^2.3.2"
+  }
+}
