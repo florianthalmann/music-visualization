@@ -1,7 +1,4 @@
-import * as d3 from 'd3-shape';
-import * as d3s from 'd3-selection';
-import * as d3c from 'd3-scale';
-import * as d3a from 'd3-axis';
+import * as d3 from 'd3';
 import { Margins, ViewConfig, ViewConfigDim, JsonGraph, JsonEdge, D3Shape, Circle, Rectangle, Ellipse, Position } from './types';
 
 let NODE_SHAPE = "nodeshape";
@@ -38,7 +35,7 @@ export abstract class MusicVisualization {
   constructor(private element, margins, private showAxes, private highlightInEdges, private noY, private onClick) {
     this.margins = margins ? margins : { top: 0, bottom: 0, left: 0, right: 0};
     this.updateWidthAndHeight();
-    this.svg = d3s.select(this.element).append('svg')
+    this.svg = d3.select(this.element).append('svg')
       .attr('width', this.element.offsetWidth)
       .attr('height', this.element.offsetHeight);
   }
@@ -102,24 +99,24 @@ export abstract class MusicVisualization {
 
     let dataSelection = this.getNodeShapes();
 
-    let enters = dataSelection.enter()
+    dataSelection.enter()
       .append(this.shapeType.name)
       .attr("class", NODE_SHAPE)
-      .on("click", d => this.onClick(d))
-      .style("fill", this.getHsl)
-      .style("opacity", 0.3)
       .attr(this.shapeType.x, this.getX)
       .attr(this.shapeType.y, this.getY)
       .attr(this.shapeType.size, 0)
       .attr(this.shapeType.width, 0)
       .attr(this.shapeType.height, 0)
+      .on("click", d => this.onClick(d))
+      .style("fill", this.getHsl)
+      .style("opacity", 0.3)
       .transition()
         .duration(this.transitionDuration) // time of initial growth
         .attr(this.shapeType.size, this.getR)
         .attr(this.shapeType.width, this.getWidth)
         .attr(this.shapeType.height, this.getHeight);
 
-    let transitions = dataSelection
+    dataSelection
       .transition()
         .duration(this.transitionDuration) // time of transition
         .style("fill", this.getHsl)
@@ -282,7 +279,7 @@ export abstract class MusicVisualization {
   }
 
   private createScale(log) {
-    return log ? d3c.scaleLog().base(2) : d3c.scaleLinear();
+    return log ? d3.scaleLog().base(2) : d3.scaleLinear();
   }
 
   private updateScaleDomains() {
@@ -329,10 +326,10 @@ export abstract class MusicVisualization {
   private updateAxes() {
     if (this.showAxes) {
       let xTransform = "translate(0," + (this.height - this.margins.bottom) + ")";
-      this.xAxis = this.updateAxis(this.xAxis, d3a.axisBottom, this.xScale, "xaxis", xTransform);
+      this.xAxis = this.updateAxis(this.xAxis, d3.axisBottom, this.xScale, "xaxis", xTransform);
       if (!this.noY) {
         let yTransform = "translate(" + this.margins.left + ",0)";
-        this.yAxis = this.updateAxis(this.yAxis, d3a.axisLeft, this.yScale, "yaxis", yTransform);
+        this.yAxis = this.updateAxis(this.yAxis, d3.axisLeft, this.yScale, "yaxis", yTransform);
       }
     }
   }
@@ -379,7 +376,7 @@ export abstract class MusicVisualization {
   }
 
   getHeight = (d) => {
-    //if no heigh param is defined, the elements reach down to the x-axis
+    //if no height param is defined, the elements reach down to the x-axis
     let heightParam = this.viewconfig.height ? this.viewconfig.height : this.viewconfig.yAxis.param;
     return this.heightScale(this.getVisualValue(d, heightParam, "height"));
   }

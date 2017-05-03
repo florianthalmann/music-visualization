@@ -1,5 +1,5 @@
 export { ViewConfig, ViewConfigDim } from './types';
-import { MusicVisualization } from './music-visualization';
+export { MusicVisualization } from './music-visualization';
 export { Arcs } from './arcs';
 export { Blocks } from './blocks';
 export { Coordinates } from './coordinates';
